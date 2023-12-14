@@ -6,3 +6,4 @@ vcpkg_installed/
 x64/
 .vs/
 
+/data/yolov3.weights
