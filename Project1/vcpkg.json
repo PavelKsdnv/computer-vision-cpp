@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "computer-vision",
+  "dependencies": [
+    "opencv"
+  ],
+  "builtin-baseline": "57fee154cc4068542740b4b5775343d9fd83413e"
+}
