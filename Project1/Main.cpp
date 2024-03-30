@@ -1,27 +1,3 @@
-// -*- coding:utf-8; mode:c++; mode:auto-fill; fill-column:80; -*-
-
-/// @file      cascade-classifier.cpp
-/// @brief     OpenCV object recognition example.
-/// @author    J. Arrieta <juan.arrieta@nablazerolabs.com>
-/// @date      October 04, 2017
-/// @copyright (c) 2017 Nabla Zero Labs
-/// @license   MIT License.
-///
-/// I wrote this example program for my later reference.
-///
-/// Compilation:
-///
-///     clang++ cascade-classifier.cpp -o cascade-classifier \
-///     -std=c++1z -Wall -Wextra -Ofast -march=native \
-///     -lopencv_objdetect -lopencv_highgui \
-///     -lopencv_imgproc -lopencv_core -lopencv_videoio
-///
-/// The Haar cascade XML description is provided as a command-line argument; the
-/// examples I used are in GitHub:
-///
-///     https://github.com/opencv/opencv/tree/master/data/haarcascades
-///
-
 // C++ Standard Library
 #include <cstdlib>
 #include <iostream>
@@ -33,17 +9,16 @@
 int main(int argc, char* argv[]) {
 
     // Load a classifier from its XML description
-    cv::CascadeClassifier classifier("D:\\Programming\\C++\\computer-vision-cpp\\data\\haarcascade_frontalface_default.xml");
+    cv::CascadeClassifier classifier("D:\\Programming\\C++\\computer-vision-cpp\\data\\haarcascade_upperbody.xml");
 
     // Prepare a display window
     const char* const window_name{ "Facial Recognition Window" };
 
     cv::namedWindow(window_name);
 
-    // Prepare a video capture device
-    cv::VideoCapture capture(0); // `0` means "default video capture"
+    cv::VideoCapture capture("D:\\Programming\\C++\\computer-vision-cpp\\data\\tokyo-walk1.mp4");
     if (not capture.isOpened()) {
-        std::cerr << "cannot open video capture device\n";
+        std::cerr << "cannot open video file\n";
         std::exit(EXIT_FAILURE);
     }
 
@@ -57,18 +32,24 @@ int main(int argc, char* argv[]) {
 
     // Main loop
     while (capture.read(image) && (!image.empty())) {
-        // Create a normalized, gray-scale version of the captured image
+        //image = cv::imread("D:\\Programming\\C++\\computer-vision-cpp\\data\\adabmp.bmp");
         cv::cvtColor(image, grayscale_image, cv::COLOR_BGR2GRAY);
         cv::equalizeHist(grayscale_image, grayscale_image);
+        cv::GaussianBlur(grayscale_image, grayscale_image, cv::Size(5, 5), 0);
+        cv::Size targetSize(640, 480); // Or any other standard size
+        cv::resize(grayscale_image, grayscale_image, targetSize);
 
-        // Detect the features in the normalized, gray-scale version of the
-        // image. You don't need to clear the previously-found features because the
         // detectMultiScale method will clear before adding new features.
-        classifier.detectMultiScale(grayscale_image, features, 1.1, 2,
-            0 | cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+        classifier.detectMultiScale(grayscale_image, features, 1.1, 3,
+            0 | cv::CASCADE_SCALE_IMAGE, cv::Size(50, 50));
 
         // Draw each feature as a separate green rectangle
         for (auto&& feature : features) {
+            feature.x *= (image.cols / targetSize.width);
+            feature.y *= (image.rows / targetSize.height);
+            feature.width *= (image.cols / targetSize.width);
+            feature.height *= (image.rows / targetSize.height);
+
             cv::rectangle(image, feature, cv::Scalar(0, 255, 0), 2);
         }
 

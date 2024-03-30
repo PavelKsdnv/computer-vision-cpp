@@ -7,3 +7,9 @@ x64/
 .vs/
 
 /data/yolov3.weights
+data/adabmp.bmp
+data/boyko.mp4
+data/haarcascade_fullbody.xml
+data/mitten.mp4
+data/tokyo-walk.mp4
+data/trump.mp4
